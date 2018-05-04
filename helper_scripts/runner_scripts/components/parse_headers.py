@@ -53,13 +53,15 @@ class ParseHeaders(Component):
         :return: True or False
         """
         temp_hdr_file_list = '/tmp/' + str(random.randint(1, 200000)) + '_hdrs.txt'
-        kernel_include_dir = os.path.join(self.kernel_src_dir, "include")
+        kernel_include_dir = os.path.join(self.kernel_src_dir, "include")                   #############!!!!!!!!!!!!!!!!!!!!!!!!1
         log_info("Running grep to find ops and operations structure.")
         # first, run grep to find all the header files.
         os.system("grep -rl \'operations {\' " + str(kernel_include_dir) + " > " + str(temp_hdr_file_list))   # search operations code
         os.system("grep -rl \'ops {\' " + str(kernel_include_dir) + " >> " + str(temp_hdr_file_list))
+        # grep -rl "ops {" include_dir >> temp_hdr_file_list          >> means add to end of temp_hdr_file_list
+
         output_file_size = 0
-        if os.path.exists(temp_hdr_file_list):
+        if os.path.exists(temp_hdr_file_list):      # if path exist
             sti = os.stat(temp_hdr_file_list)
             output_file_size = sti.st_size
         if output_file_size > 0:
@@ -126,7 +128,9 @@ def _run_single_c2xml((c2xml_bin, curr_hdr_file, dst_work_dir, all_hdr_options))
     curr_hdr_file = curr_hdr_file.strip()
     target_out_file = os.path.join('/tmp', os.path.basename(curr_hdr_file) + '.hdrout')
     cmd_line = " ".join(all_hdr_options)
-    cmd_line = c2xml_bin + " " + cmd_line + " " + curr_hdr_file + " > " + target_out_file + " 2>/dev/null"
+    cmd_line = c2xml_bin + " " + cmd_line + " " + curr_hdr_file + " > " + target_out_file + " 2>&1" #/dev/null"
+
+    log_info(cmd_line)
     back_wd = os.getcwd()
     if dst_work_dir is not None:
         os.chdir(dst_work_dir)
